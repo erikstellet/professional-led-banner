@@ -1,118 +1,120 @@
-/**
- * Sample React Native App
- * https://github.com/facebook/react-native
- *
- * @format
- */
-
-import React from 'react';
-import type {PropsWithChildren} from 'react';
+import { useRef, useState } from 'react';
 import {
-  SafeAreaView,
-  ScrollView,
-  StatusBar,
-  StyleSheet,
   Text,
-  useColorScheme,
-  View,
+  TextInput,
+  Animated,
+  StyleSheet,
 } from 'react-native';
 
-import {
-  Colors,
-  DebugInstructions,
-  Header,
-  LearnMoreLinks,
-  ReloadInstructions,
-} from 'react-native/Libraries/NewAppScreen';
+import { GestureHandlerRootView } from 'react-native-gesture-handler';
+import { SafeAreaProvider } from 'react-native-safe-area-context';
 
-type SectionProps = PropsWithChildren<{
-  title: string;
-}>;
+import BottomSheet from './src/components/BottomSheet';
+import ButtonComponent from './src/components/ButtonComponent';
 
-function Section({children, title}: SectionProps): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
-  return (
-    <View style={styles.sectionContainer}>
-      <Text
-        style={[
-          styles.sectionTitle,
-          {
-            color: isDarkMode ? Colors.white : Colors.black,
-          },
-        ]}>
-        {title}
-      </Text>
-      <Text
-        style={[
-          styles.sectionDescription,
-          {
-            color: isDarkMode ? Colors.light : Colors.dark,
-          },
-        ]}>
-        {children}
-      </Text>
-    </View>
-  );
-}
+export default function App() {
+  const slideAnim = useRef(new Animated.Value(-600)).current;
 
-function App(): React.JSX.Element {
-  const isDarkMode = useColorScheme() === 'dark';
+  const [text, setText] = useState('');
+  const [modalVisible, setModalVisible] = useState(false);
+  const [isAnimating, setIsAnimating] = useState(false);
 
-  const backgroundStyle = {
-    backgroundColor: isDarkMode ? Colors.darker : Colors.lighter,
+  const startAnimation = () => {
+    setIsAnimating(true);
+    Animated.loop(
+      Animated.timing(slideAnim, {
+        toValue: 600,
+        duration: 3000,
+        useNativeDriver: true,
+      })
+    ).start();
+  };
+
+  const closeModal = () => {
+    setModalVisible(false);
+    startAnimation();
+  };
+
+  const openModal = () => {
+    setModalVisible(true);
+    setIsAnimating(false);
+    slideAnim.setValue(-300);
+  };
+
+  const getRandomColor = () => {
+    const colors = ['#FF6347', '#FFD700', '#32CD32', '#1E90FF', '#FF69B4'];
+
+    return colors[Math.floor(Math.random() * colors.length)];
   };
 
   return (
-    <SafeAreaView style={backgroundStyle}>
-      <StatusBar
-        barStyle={isDarkMode ? 'light-content' : 'dark-content'}
-        backgroundColor={backgroundStyle.backgroundColor}
-      />
-      <ScrollView
-        contentInsetAdjustmentBehavior="automatic"
-        style={backgroundStyle}>
-        <Header />
-        <View
-          style={{
-            backgroundColor: isDarkMode ? Colors.black : Colors.white,
-          }}>
-          <Section title="Step One">
-            Edit <Text style={styles.highlight}>App.tsx</Text> to change this
-            screen and then come back to see your edits.
-          </Section>
-          <Section title="See Your Changes">
-            <ReloadInstructions />
-          </Section>
-          <Section title="Debug">
-            <DebugInstructions />
-          </Section>
-          <Section title="Learn More">
-            Read the docs to discover what to do next:
-          </Section>
-          <LearnMoreLinks />
-        </View>
-      </ScrollView>
-    </SafeAreaView>
+    <GestureHandlerRootView style={styles.container}>
+      <SafeAreaProvider>
+        <BottomSheet visible={modalVisible} setVisible={setModalVisible}>
+          <TextInput
+            style={styles.input}
+            placeholder="Digite algo..."
+            value={text}
+            onChangeText={setText}
+          />
+
+          <ButtonComponent title="Começar" onPress={closeModal} />
+        </BottomSheet>
+
+      {!modalVisible && (
+        <>
+          {isAnimating && (
+            <Animated.View
+              style={[
+                styles.ledContainer,
+                { transform: [{ translateY: slideAnim }, { rotate: '90deg' }] }
+              ]}
+            >
+              {text.split('').map((char, index) => (
+                <Text
+                  key={index}
+                  style={[styles.ledText, { color: getRandomColor() }]}
+                >
+                  {char}
+                </Text>
+              ))}
+            </Animated.View>
+          )}
+
+          <ButtonComponent title="Reabrir Modal" onPress={openModal} />
+        </>
+      )}
+    </SafeAreaProvider>
+    </GestureHandlerRootView>
   );
-}
+};
 
 const styles = StyleSheet.create({
-  sectionContainer: {
-    marginTop: 32,
-    paddingHorizontal: 24,
+  container: {
+    flex: 1,
+
+    backgroundColor: '#FFF',
   },
-  sectionTitle: {
-    fontSize: 24,
-    fontWeight: '600',
-  },
-  sectionDescription: {
-    marginTop: 8,
+  input: {
+    height: 50,
+    width: '100%',
+    padding: 16,
+    marginBottom: 20,
+
     fontSize: 18,
-    fontWeight: '400',
+
+    borderWidth: 1,
+    borderColor: "#000",
+    borderRadius: 12,
+    backgroundColor: '#D9D9D9',
   },
-  highlight: {
-    fontWeight: '700',
+  ledContainer: {
+    flexDirection: 'row',
+    marginTop: 20,
+  },
+  ledText: {
+    fontSize: 64,
+    fontWeight: 'bold',
+    marginHorizontal: 2,
   },
 });
-
-export default App;
