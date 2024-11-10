@@ -1,5 +1,5 @@
 import { ReactNode } from "react";
-import { Pressable, StyleSheet } from "react-native";
+import { Pressable, StyleSheet, Text, View } from "react-native";
 
 import { Gesture, GestureDetector } from "react-native-gesture-handler";
 import Animated, {
@@ -16,7 +16,7 @@ import Animated, {
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
 
 const OVERDRAG = 20;
-const HEIGHT = 340;
+const HEIGHT = 280;
 
 interface Props {
   children: ReactNode;
@@ -61,11 +61,18 @@ function BottomSheet({ children, setVisible, visible }: Props) {
 
         <GestureDetector gesture={pan}>
           <Animated.View
-            entering={SlideInDown.springify().damping(16)}
+            entering={SlideInDown}
             exiting={SlideOutDown}
-            style={[styles.content, translateY]}
+            style={[styles.bottomSheet, translateY]}
           >
-            { children }
+            <View style={styles.indicator}>
+              <Text style={styles.indicatorLabel}>Promp de Comando</Text>
+              <Text style={styles.indicatorLabel}>x</Text>
+            </View>
+
+            <View style={styles.content}>
+              { children }
+            </View>
           </Animated.View>
         </GestureDetector>
       </>
@@ -77,23 +84,53 @@ const styles = StyleSheet.create({
   buttonOverlay: {
     ...StyleSheet.absoluteFillObject,
     zIndex: 1,
-
-    backgroundColor: "rgba(0, 0, 0, .4)"
   },
-  content: {
+  bottomSheet: {
     alignItems: "center",
-    bottom: -OVERDRAG * 1.1,
+    bottom: 0,
     height: HEIGHT,
     justifyContent: "center",
 
-    padding: 24,
+    paddingTop: 8,
     position: "absolute",
     width: "100%",
     zIndex: 1,
 
-    backgroundColor: "white",
-    borderTopLeftRadius: 16,
-    borderTopRightRadius: 16,
+    backgroundColor: "#414141",
+    borderColor: "#414141",
+    borderBottomWidth: 0,
+    boxShadow: "0px 0px 8px 8px rgba(0, 0, 0, .1)"
+  },
+  indicator : {
+    alignSelf: "flex-start",
+    alignItems: "center",
+    flexDirection: "row",
+    height: 24,
+
+    justifyContent: "space-around",
+    marginLeft: 8,
+    width: "50%",
+
+    borderTopLeftRadius: 6,
+    borderTopRightRadius: 6,
+    borderColor: "gray",
+    backgroundColor: "#000",
+  },
+  indicatorLabel : {
+    alignSelf: "flex-start",
+    color: "#FFF",
+    fontSize: 16,
+    fontFamily: "Inconsolata-Medium",
+  },
+  content: {
+    alignItems: "flex-start",
+    flex: 1,
+    justifyContent: "flex-start",
+    padding: 16,
+
+    width: "100%",
+
+    backgroundColor: "#000",
   }
 });
 

@@ -4,13 +4,13 @@ import {
   TextInput,
   Animated,
   StyleSheet,
+  Button,
 } from 'react-native';
 
 import { GestureHandlerRootView } from 'react-native-gesture-handler';
 import { SafeAreaProvider } from 'react-native-safe-area-context';
 
 import BottomSheet from './src/components/BottomSheet';
-import ButtonComponent from './src/components/ButtonComponent';
 
 export default function App() {
   const slideAnim = useRef(new Animated.Value(-600)).current;
@@ -51,6 +51,8 @@ export default function App() {
     <GestureHandlerRootView style={styles.container}>
       <SafeAreaProvider>
         <BottomSheet visible={modalVisible} setVisible={setModalVisible}>
+          <Text style={styles.label}>Banner LED PRO [ versão 0.1.0]</Text>
+          <Text style={styles.label}>C:\Users\eriks></Text>
           <TextInput
             style={styles.input}
             placeholder="Digite algo..."
@@ -58,7 +60,7 @@ export default function App() {
             onChangeText={setText}
           />
 
-          <ButtonComponent title="Começar" onPress={closeModal} />
+          <Button title="Começar" onPress={closeModal} />
         </BottomSheet>
 
       {!modalVisible && (
@@ -81,7 +83,7 @@ export default function App() {
             </Animated.View>
           )}
 
-          <ButtonComponent title="Reabrir Modal" onPress={openModal} />
+          <Button title="Reabrir Modal" onPress={openModal} />
         </>
       )}
     </SafeAreaProvider>
@@ -95,18 +97,23 @@ const styles = StyleSheet.create({
 
     backgroundColor: '#FFF',
   },
+  label: {
+    marginBottom: 16,
+    color: "#FFF",
+    fontFamily: "Inconsolata-Regular",
+    fontSize: 20,
+  },
   input: {
     height: 50,
     width: '100%',
-    padding: 16,
     marginBottom: 20,
 
     fontSize: 18,
+    fontFamily: "Inconsolata-Medium",
 
-    borderWidth: 1,
-    borderColor: "#000",
-    borderRadius: 12,
-    backgroundColor: '#D9D9D9',
+    color: "#FFF",
+  
+    backgroundColor: '#000',
   },
   ledContainer: {
     flexDirection: 'row',
